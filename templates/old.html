@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Auto Changeover System</title>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/cbu.png') }}" alt="Logo">
+        </div>
+        <div class="title">
+            <h1>Auto Changeover System </h1>
+        </div>
+        <nav class="nav">
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Current Mode with Status Indicator -->
+        <h2>
+            Current Mode: 
+            <span class="status-indicator {{ mode }}"></span> 
+            {{ mode | capitalize }}
+        </h2>
+
+        <!-- Card Layout for Solar and Grid Data -->
+        <div class="card-container">
+            <div class="table-left">
+                <h3>Solar Data</h3>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Voltage measured in Volts">
+                        <img src="{{ url_for('static', filename='images/voltage.png') }}" alt="Voltage Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Voltage (V)</h3>
+                        <p>{{ solar_data.voltage }}</p>
+                    </div>
+                </div>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Current measured in Amperes">
+                        <img src="{{ url_for('static', filename='images/current.png') }}" alt="Current Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Current (A)</h3>
+                        <p>{{ solar_data.current }}</p>
+                    </div>
+                </div>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Power measured in Watts">
+                        <img src="{{ url_for('static', filename='images/power.png') }}" alt="Power Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Power (W)</h3>
+                        <p>{{ solar_data.power }}</p>
+                    </div>
+                </div>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Total units consumed">
+                        <img src="{{ url_for('static', filename='images/units.png') }}" alt="Units Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Units Consumed</h3>
+                        <p>{{ solar_data.unitsConsumed }}</p>
+                    </div>
+                </div>
+                <!-- Button to switch to Solar -->
+                <form method="post" class="button-container">
+                    <button name="switch-to-solar" type="submit">Switch to Solar</button>
+                </form>
+            </div>
+
+            <div class="table-right">
+                <h3>Grid Data</h3>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Voltage measured in Volts">
+                        <img src="{{ url_for('static', filename='images/voltage.png') }}" alt="Voltage Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Voltage (V)</h3>
+                        <p>{{ grid_data.voltage }}</p>
+                    </div>
+                </div>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Current measured in Amperes">
+                        <img src="{{ url_for('static', filename='images/current.png') }}" alt="Current Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Current (A)</h3>
+                        <p>{{ grid_data.current }}</p>
+                    </div>
+                </div>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Power measured in Watts">
+                        <img src="{{ url_for('static', filename='images/power.png') }}" alt="Power Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Power (W)</h3>
+                        <p>{{ grid_data.power }}</p>
+                    </div>
+                </div>
+                <div class="card mode-{{ mode }}">
+                    <div class="card-icon" data-tooltip="Total units consumed">
+                        <img src="{{ url_for('static', filename='images/units.png') }}" alt="Units Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Units </h3>
+                        <p>{{ grid_data.unitsConsumed }}</p>
+                    </div>
+                </div>
+                <!-- Button to switch to Grid -->
+                <form method="post" class="button-container">
+                    <button name="switch-to-grid" type="submit">Switch to Grid</button>
+                </form>
+            </div>
+        </div>
+        {% include 'charts.html' %}
+
+    </div>
+</body>
+</html>

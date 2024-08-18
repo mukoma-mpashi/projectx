@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Line Chart for Power Consumption Over Time -->
+        <div class="chart-container">
+          
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <!-- Pie Chart for Energy Source Distribution -->
+        <div class="chart-container">
+            <!-- <h3>Energy Source Distribution</h3> -->
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- Bar Chart for Energy Consumption -->
+        <div class="chart-container">
+            <!-- <h3>Energy Consumption (Daily/Weekly/Monthly)</h3> -->
+            <canvas id="barChart"></canvas>
+        </div>
+
+        <!-- Gauge Chart for Battery Levels -->
+        <!-- <div class="chart-container">
+            <h3>Battery Levels</h3>
+            <canvas id="gaugeChart"></canvas>
+        </div> -->
+    </div>
+
+    <script>
+        // Data for charts
+        const powerConsumptionData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'Solar Power (W)',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                borderColor: '#ffeb3b',
+                backgroundColor: 'rgba(255, 235, 59, 0.5)',
+                fill: true,
+                tension: 0.1
+            }, {
+                label: 'Grid Power (W)',
+                data: [28, 48, 40, 19, 86, 27, 90],
+                borderColor: '#2196f3',
+                backgroundColor: 'rgba(33, 150, 243, 0.5)',
+                fill: true,
+                tension: 0.1
+            }]
+        };
+
+        // Line Chart for Power Consumption Over Time
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: powerConsumptionData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Time' } },
+                    y: { title: { display: true, text: 'Power (W)' } }
+                }
+            }
+        });
+
+        // Pie Chart for Energy Source Distribution
+        const energyDistributionData = {
+            labels: ['Solar', 'Grid'],
+            datasets: [{
+                data: [60, 40],
+                backgroundColor: ['#ffeb3b', '#2196f3'],
+                hoverOffset: 4
+            }]
+        };
+
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        const pieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: energyDistributionData,
+            options: {
+                responsive: true
+            }
+        });
+
+        // Bar Chart for Energy Consumption
+        const energyConsumptionData = {
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            datasets: [{
+                label: 'Energy Consumption (kWh)',
+                data: [3, 7, 4, 5, 2, 8, 6],
+                backgroundColor: '#2196f3',
+                hoverBackgroundColor: '#1976d2'
+            }]
+        };
+
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        const barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: energyConsumptionData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Time Interval' } },
+                    y: { title: { display: true, text: 'Energy (kWh)' } }
+                }
+            }
+        });
+
+        // Gauge Chart for Battery Levels
+        const gaugeCtx = document.getElementById('gaugeChart').getContext('2d');
+        const gaugeChart = new Chart(gaugeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Battery Level'],
+                datasets: [{
+                    data: [75, 25],
+                    backgroundColor: ['#4caf50', '#e0e0e0'],
+                    hoverOffset: 4,
+                    cutout: '80%'
+                }]
+            },
+            options: {
+                responsive: true,
+                rotation: -90,
+                circumference: 180,
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Auto Changeover System</title>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/cbu.png') }}" alt="Logo">
+        </div>
+        <div class="title">
+            <h1>Auto Changeover System</h1>
+        </div>
+        <nav class="nav">
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Current Mode with Status Indicator -->
+        <h2>
+            Current Mode: 
+            <span id="mode-status" class="status-indicator {{ mode }}"></span> 
+            <span id="mode-text">{{ mode | capitalize }}</span>
+        </h2>
+
+        <!-- Card Layout for Solar and Grid Data -->
+        <div class="card-container">
+            <div class="table-left">
+                <h3>Solar Data</h3>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Voltage measured in Volts">
+                        <img src="{{ url_for('static', filename='images/voltage.png') }}" alt="Voltage Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Voltage (V)</h3>
+                        <p id="solar-voltage">{{ solar_data.voltage }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Current measured in Amperes">
+                        <img src="{{ url_for('static', filename='images/current.png') }}" alt="Current Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Current (A)</h3>
+                        <p id="solar-current">{{ solar_data.current }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Power measured in Watts">
+                        <img src="{{ url_for('static', filename='images/power.png') }}" alt="Power Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Power (W)</h3>
+                        <p id="solar-power">{{ solar_data.power }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Total units consumed">
+                        <img src="{{ url_for('static', filename='images/units.png') }}" alt="Units Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Units Consumed</h3>
+                        <p id="solar-units">{{ solar_data.unitsConsumed }}</p>
+                    </div>
+                </div>
+                <!-- Button to switch to Solar -->
+                <button onclick="switchMode('solar')">Switch to Solar</button>
+            </div>
+
+            <div class="table-right">
+                <h3>Grid Data</h3>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Voltage measured in Volts">
+                        <img src="{{ url_for('static', filename='images/voltage.png') }}" alt="Voltage Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Voltage (V)</h3>
+                        <p id="grid-voltage">{{ grid_data.voltage }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Current measured in Amperes">
+                        <img src="{{ url_for('static', filename='images/current.png') }}" alt="Current Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Current (A)</h3>
+                        <p id="grid-current">{{ grid_data.current }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Power measured in Watts">
+                        <img src="{{ url_for('static', filename='images/power.png') }}" alt="Power Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Power (W)</h3>
+                        <p id="grid-power">{{ grid_data.power }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon" data-tooltip="Total units consumed">
+                        <img src="{{ url_for('static', filename='images/units.png') }}" alt="Units Icon">
+                    </div>
+                    <div class="card-content">
+                        <h3>Units Consumed</h3>
+                        <p id="grid-units">{{ grid_data.unitsConsumed }}</p>
+                    </div>
+                </div>
+                <!-- Button to switch to Grid -->
+                <button onclick="switchMode('grid')">Switch to Grid</button>
+            </div>
+        </div>
+        {% include 'charts.html' %}
+    </div>
+
+    <!-- JavaScript to handle mode switching and real-time updates -->
+    <script>
+        async function switchMode(mode) {
+            try {
+                const response = await fetch('/switch_mode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ mode: mode })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById('mode-status').className = 'status-indicator ' + mode;
+                    document.getElementById('mode-text').textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+                    updateData();
+                }
+            } catch (error) {
+                console.error('Error switching mode:', error);
+            }
+        }
+
+        async function updateData() {
+            try {
+                const response = await fetch('/get_data');
+                const data = await response.json();
+
+                document.getElementById('solar-voltage').textContent = data.solar.voltage;
+                document.getElementById('solar-current').textContent = data.solar.current;
+                document.getElementById('solar-power').textContent = data.solar.power;
+                document.getElementById('solar-units').textContent = data.solar.unitsConsumed;
+
+                document.getElementById('grid-voltage').textContent = data.grid.voltage;
+                document.getElementById('grid-current').textContent = data.grid.current;
+                document.getElementById('grid-power').textContent = data.grid.power;
+                document.getElementById('grid-units').textContent = data.grid.unitsConsumed;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Optionally, use a setInterval to periodically update data
+        setInterval(updateData, 5000); // Update every 5 seconds
+    </script>
+
+</body>
+</html>
